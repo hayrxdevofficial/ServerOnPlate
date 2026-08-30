@@ -1,2 +1,5 @@
 # ServerOnPlate
-Here it’s your Plate and your Server! Here you can upload your App Plate a Server got this Plate and give another!
+Here we public code created by HayrX Team!
+
+all codes its or python or luau
+DONT USE TO CREATE CHEATS

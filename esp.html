@@ -1,5 +1,92 @@
 <!DOCTYPE>
 <h1>ServerOnPlate</h1>
-<h2>ESP ROBLOX PYTHON</h2>
+<h2>ESP ROBLOX LUAU</h2>
 <h2>ARCHIVE CODE</h2>
-<h3>no code avaible</h3>
+<h3>Code TIP: luau</h3>
+<h4>local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
+local ESP_CONFIG = {
+    BoxColor = Color3.fromRGB(0, 255, 0),
+    TextColor = Color3.fromRGB(255, 255, 255),
+    BoxThickness = 1,
+    TextSize = 14,
+    Distance = 100
+}
+
+local espObjects = {}
+
+local function createESP(player)
+    if player == LocalPlayer then return end
+    
+    local folder = Instance.new("Folder")
+    folder.Name = "ESP_" .. player.Name
+    folder.Parent = player
+    
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "Box"
+    billboard.Size = UDim2.new(0, 100, 0, 100)
+    billboard.StudsOffset = Vector3.new(0, 3, 0)
+    billboard.Adornee = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    billboard.Parent = folder
+    
+    local frame = Instance.new("Frame")
+    frame.Name = "Frame"
+    frame.Size = UDim2.new(1, 0, 1, 0)
+    frame.BackgroundTransparency = 1
+    frame.BorderSizePixel = ESP_CONFIG.BoxThickness
+    frame.BorderColor3 = ESP_CONFIG.BoxColor
+    frame.Parent = billboard
+    
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Name = "Name"
+    textLabel.Size = UDim2.new(1, 0, 0, 20)
+    textLabel.Position = UDim2.new(0, 0, 1, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.Text = player.Name
+    textLabel.TextColor3 = ESP_CONFIG.TextColor
+    textLabel.TextSize = ESP_CONFIG.TextSize
+    textLabel.TextStrokeTransparency = 0.5
+    textLabel.Font = Enum.Font.GothamBold
+    textLabel.Parent = billboard
+    
+    espObjects[player] = {
+        Folder = folder,
+        Billboard = billboard,
+        Frame = frame,
+        Text = textLabel
+    }
+end
+
+local function removeESP(player)
+    if espObjects[player] then
+        espObjects[player].Folder:Destroy()
+        espObjects[player] = nil
+    end
+end
+
+local function updateESP()
+    for player, data in pairs(espObjects) do
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local rootPart = player.Character.HumanoidRootPart
+            local localRoot = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            
+            if localRoot then
+                local distance = (rootPart.Position - localRoot.Position).Magnitude
+                data.Billboard.Enabled = distance <= ESP_CONFIG.Distance
+            end
+        else
+            data.Billboard.Enabled = false
+        end
+    end
+end
+
+Players.PlayerAdded:Connect(createESP)
+Players.PlayerRemoving:Connect(removeESP)
+
+for _, player in ipairs(Players:GetPlayers()) do
+    createESP(player)
+end
+
+RunService.RenderStepped:Connect(updateESP)</h4>

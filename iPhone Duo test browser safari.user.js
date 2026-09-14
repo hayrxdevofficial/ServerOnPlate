@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         iPhone Duo Transition
 // @namespace    http://tampermonkey.net/
-// @version      1.0
-// @description  Имитация анимации перехода как в iPhone Duo (Duo/Meet)
+// @version      1.1
+// @description  Имитация анимации перехода как в iPhone Duo (Duo/Meet) + затемнение при переходе в режим вкладок Safari
 // @author       You
 // @match        *://*/*
 // @grant        none
@@ -14,6 +14,7 @@
 
     const DURATION_IN  = 450; // мс — вход
     const DURATION_OUT = 380; // мс — выход
+    const DURATION_TABSWITCH = 320; // мс — затемнение в режим вкладок
 
     // ---------- Стили ----------
     const style = document.createElement('style');
@@ -26,7 +27,7 @@
             will-change: opacity, transform, filter;
             backface-visibility: hidden;
         }
-        /* Начальное состояние "выхода" */
+        /* Начальное состояние "выхода" (переход по ссылке) */
         html.duo-leaving, html.duo-leaving body {
             opacity: 0;
             transform: scale(0.94);
@@ -40,7 +41,7 @@
             filter: blur(8px) brightness(1.1);
             transition: none !important;
         }
-        /* Плавное появление "чёрного стекла" поверх — как в Duo */
+        /* Плавное появление "чёрного стекла" поверх — как в Duo (при переходе по ссылке) */
         #duo-veil {
             position: fixed;
             inset: 0;
@@ -56,16 +57,34 @@
             transition: opacity ${DURATION_OUT}ms ease-out;
         }
         #duo-veil.show { opacity: 1; }
+
+        /* Отдельный полностью чёрный вуаль — для перехода в режим вкладок Safari
+           (не навигация, просто скрытие/показ страницы) */
+        #duo-tabswitch-veil {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: #000;
+            opacity: 0;
+            z-index: 2147483647;
+            transition: opacity ${DURATION_TABSWITCH}ms ease-in-out;
+        }
+        #duo-tabswitch-veil.show { opacity: 1; }
     `;
     (document.head || document.documentElement).appendChild(style);
 
-    // ---------- Оверлей-вуаль ----------
+    // ---------- Оверлей-вуаль (для навигации по ссылкам) ----------
     const veil = document.createElement('div');
     veil.id = 'duo-veil';
 
-    function mountVeil() {
+    // ---------- Оверлей-вуаль (для режима вкладок) ----------
+    const tabSwitchVeil = document.createElement('div');
+    tabSwitchVeil.id = 'duo-tabswitch-veil';
+
+    function mountVeils() {
         if (!document.body) return;
         document.body.appendChild(veil);
+        document.body.appendChild(tabSwitchVeil);
     }
 
     // ---------- Вход ----------
@@ -81,7 +100,7 @@
         });
     }
 
-    // ---------- Выход ----------
+    // ---------- Выход (переход по ссылке) ----------
     function playLeave(url) {
         const root = document.documentElement;
         if (root.classList.contains('duo-leaving')) return;
@@ -102,7 +121,32 @@
         }, { once: true });
     }
 
-    // ---------- Перехват переходов ----------
+    // ---------- Затемнение при переходе в режим вкладок Safari ----------
+    // Срабатывает на visibilitychange: когда открывается сетка вкладок,
+    // страница получает document.hidden = true, но НЕ выгружается и НЕ закрывается.
+    function handleVisibilityChange() {
+        if (document.hidden) {
+            tabSwitchVeil.classList.add('show');
+        } else {
+            tabSwitchVeil.classList.remove('show');
+        }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Подстраховка: некоторые версии Safari шлют pagehide с persisted=true
+    // при сворачивании/переходе в таб-свитчер вместо/вместе с visibilitychange.
+    window.addEventListener('pagehide', (e) => {
+        if (e.persisted) {
+            tabSwitchVeil.classList.add('show');
+        }
+    });
+    window.addEventListener('pageshow', (e) => {
+        if (e.persisted) {
+            tabSwitchVeil.classList.remove('show');
+        }
+    });
+
+    // ---------- Перехват переходов по ссылкам ----------
     function isModifiedClick(e) {
         return e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0;
     }
@@ -140,17 +184,23 @@
     document.documentElement.classList.add('duo-entering');
 
     document.addEventListener('DOMContentLoaded', () => {
-        mountVeil();
+        mountVeils();
         playEnter();
 
-        // Убираем вуаль, если была активна
+        // Убираем вуали, если были активны
         veil.classList.remove('show');
+        tabSwitchVeil.classList.remove('show');
         document.documentElement.classList.remove('duo-leaving');
+
+        // Если страница уже скрыта на момент загрузки (маловероятно, но на всякий случай)
+        if (document.hidden) {
+            tabSwitchVeil.classList.add('show');
+        }
     });
 
     // Страховка: если DOMContentLoaded не сработал по какой-то причине
     window.addEventListener('load', () => {
-        mountVeil();
+        mountVeils();
         document.documentElement.classList.remove('duo-entering');
     });
 })();

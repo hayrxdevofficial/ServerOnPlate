@@ -1,328 +1,87 @@
 // ==UserScript==
-// @name         Roblox 2008 Classic Theme (Full Page)
-// @namespace    http://tampermonkey.net/
-// @version      3.0
-// @description  Полностью классический вид Roblox 2008: плоские зелёные кнопки без теней, зелёный лайк, красный дизлайк, жёлтый Фаворит, старый серый фон
-// @author       You
-// @match        https://www.roblox.com/*
-// @match        https://web.roblox.com/*
-// @match        https://roblox.com/*
+// @name         Roblox 2008 Ultimate Retro Edition
+// @namespace    http://tampermonkey.net
+// @version      4.0
+// @description  Абсолютное возвращение Roblox 2008: синяя шапка, Tix вместо Robux, старый логотип, Comic Sans, квадратный UI и максимальная оптимизация.
+// @author       AI Ultimate Customizer
+// @match        https://*://*
+// @match        https://roblox.com*
 // @grant        GM_addStyle
 // @run-at       document-start
 // ==/UserScript==
 
-(function () {
+(function() {
     'use strict';
 
-    const COLORS = {
-        play:         '#3CB043',   // плоский зелёный
-        playHover:    '#4FCC57',
-        playBorder:   '#1B5E1B',
-        like:         '#4CAF50',
-        dislike:      '#D32F2F',
-        favorite:     '#FFC107',   // жёлтый всегда
-        favoriteHover:'#FFD54F',
-        favoriteBord: '#E0A800',
-        barBg:        '#C62828',
-        pageBg:       '#E8E8E8',   // старый серый фон
-        panelBg:      '#FFFFFF',
-        panelBorder:  '#B0B0B0',
-        headerBg:     '#1F1F1F',
-        headerText:   '#FFFFFF',
-        link:         '#0033CC',
-        linkHover:    '#0055FF',
-        text:         '#000000',
-    };
-
+    // Скомпилированный минифицированный CSS для максимального FPS и мгновенной загрузки
     const css = `
-        /* =========================================================
-           БАЗОВЫЙ ФОН И ТЕКСТ — классика 2008
-           ========================================================= */
-        html, body {
-            background-color: ${COLORS.pageBg} !important;
-            color: ${COLORS.text} !important;
-            font-family: Arial, Helvetica, sans-serif !important;
+        html,body{background-color:#E3E3E3!important;color:#000!important;font-family:"Comic Sans MS","Lucida Sans",Arial,sans-serif!important;cursor:url('https://rbxcdn.com'),default!important}
+        a,a:visited{color:#0000EE!important;text-decoration:underline!important}
+        a:hover{color:#0000FF!important}
+        h1,h2,h3,h4,h5,h6,.game-name,.text-title,[class*="game-card-name"],[class*="GameCardName"]{font-family:"Comic Sans MS",Arial,sans-serif!important;color:#000!important;font-weight:bold!important;text-shadow:none!important}
+        
+        /* ВЕРХНЯЯ СИНЯЯ ПАНЕЛЬ 2008 И СТАРЫЙ ЛОГОТИП */
+        #navigation,.navbar,nav[class*="navbar"],[class*="navigation-container"],[class*="NavigationBar"],header[class*="navbar"]{background:#003399!important;border-bottom:3px solid #001A4D!important;box-shadow:none!important}
+        #navigation a,.navbar a,nav[class*="navbar"] a{color:#FFF!important;font-family:Arial,sans-serif!important;font-weight:bold!important}
+        #navigation a:hover,.navbar a:hover{background-color:#002266!important}
+        
+        /* Замена логотипа на каноничную надпись 2008 года */
+        .icon-logo-rblx, .icon-logo, [class*="logo"], [class*="Logo"] {
+            background-image: url('https://rbxcdn.com') !important;
+            background-size: contain !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            width: 130px !important;
+            height: 35px !important;
         }
 
-        a, a:visited {
-            color: ${COLORS.link} !important;
-            text-decoration: underline !important;
-        }
-        a:hover {
-            color: ${COLORS.linkHover} !important;
-            text-decoration: underline !important;
-        }
+        /* Квадратные панели и карточки (Никакого плоского Flat-дизайна и скруглений) */
+        .container,.content,.section,.game-card,[class*="card"],[class*="Card"],[class*="panel"],[class*="Panel"],.game-card-container,.item-card-container,.game-cards,.section-content{background:#FFF!important;border:2px solid #808080!important;border-radius:0!important;box-shadow:none!important}
+        img,img[class*="avatar"],img[class*="thumbnail"],.avatar-card-image,.game-card-thumb,.game-card-thumb-container,[class*="avatar"], [class*="Avatar"]{border-radius:0!important;box-shadow:none!important;border:1px solid #A0A0A0!important}
+        
+        /* ОБЪЕМНАЯ ЗЕЛЕНАЯ КНОПКА PLAY (Светлый верх, темный низ) */
+        .btn-common-play-game-lg,.btn-common-play-game,.btn-growth-lg,.btn-growth-md,.game-play-button-container .btn-primary-lg,.game-play-button-container .btn-primary-md,#game-details-play-button-container .btn-primary-lg,#game-details-play-button-container button,.play-button-container button,button[data-testid="play-button"]{background:#00E600!important;border-top:3px solid #66FF66!important;border-left:3px solid #66FF66!important;border-bottom:3px solid #008000!important;border-right:3px solid #008000!important;border-radius:0!important;box-shadow:none!important;color:#000!important;font-weight:bold!important;font-size:22px!important;font-family:"Comic Sans MS",sans-serif!important}
+        .btn-common-play-game-lg:hover,button[data-testid="play-button"]:hover{background:#1AFF1A!important;border-top:3px solid #99FF99!important;border-bottom:3px solid #005900!important}
+        button[data-testid="play-button"] .icon-play,button[data-testid="play-button"] span[class*="icon"]{display:none!important}
 
-        h1, h2, h3 {
-            font-family: "Comic Sans MS", "Arial", sans-serif !important;
-            color: #222 !important;
-            font-weight: bold !important;
-            text-shadow: none !important;
+        /* ДРУГИЕ КНОПКИ В СТИЛЕ СТАРЫХ WINDOWS / ROBLOX */
+        button,.btn,[class*="btn-primary"],[class*="btn-secondary"],[class*="btn-common"]{border-radius:0!important;box-shadow:none!important;background-color:#E1E1E1!important;border-top:2px solid #FFF!important;border-left:2px solid #FFF!important;border-bottom:2px solid #717171!important;border-right:2px solid #717171!important;color:#000!important}
+        
+        /* ИКОНКА ROBUX -> В КЛАССИЧЕСКИЕ БИЛЕТЫ (TIX) */
+        .icon-robux, .icon-robux-gray, [class*="robux"], [class*="Robux"], .icon-nav-robux {
+            background-image: url('https://rbxcdn.com') !important; /* Каноничный золотой/зеленый тикет */
+            background-size: contain !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            color: #008000 !important; /* Зеленый баланс */
         }
+        [class*="robux-text"], [class*="RobuxText"] { color: #008000 !important; font-weight: bold !important; }
 
-        /* =========================================================
-           ВЕРХНЯЯ ПАНЕЛЬ (NAVIGATION)
-           ========================================================= */
-        #navigation,
-        .navbar,
-        nav[class*="navbar"],
-        [class*="navigation-container"],
-        [class*="NavigationBar"],
-        header[class*="navbar"] {
-            background: ${COLORS.headerBg} !important;
-            background-image: none !important;
-            border-bottom: 2px solid #000 !important;
-            box-shadow: none !important;
-        }
-        #navigation a,
-        .navbar a,
-        nav[class*="navbar"] a {
-            color: ${COLORS.headerText} !important;
-            text-decoration: none !important;
-        }
-        #navigation a:hover,
-        .navbar a:hover {
-            text-decoration: underline !important;
-        }
+        /* СТАРЫЙ ДИЗЛАЙК-БАР */
+        .vote-percentage-bar,[class*="vote-percentage-bar"],[class*="VotePercentageBar"]{background-color:#CC0000!important;border:1px solid #000!important;border-radius:0!important;height:10px!important}
+        .vote-percentage-bar .vote-percentage,[class*="vote-percentage"]:not([class*="bar"]),[class*="VotePercentageFill"]{background-color:#00CC00!important;border-radius:0!important}
+        button[data-testid="upvote-button"],.vote-up-button,.upvote{color:#00CC00!important}
+        button[data-testid="downvote-button"],.vote-down-button,.downvote{color:#FF0000!important}
 
-        /* =========================================================
-           ПАНЕЛИ / КАРТОЧКИ — плоский белый прямоугольник
-           ========================================================= */
-        .container,
-        .content,
-        .section,
-        .game-card,
-        [class*="card"],
-        [class*="Card"],
-        [class*="panel"],
-        [class*="Panel"],
-        .game-card-container,
-        .item-card-container,
-        .game-cards,
-        .section-content {
-            background: ${COLORS.panelBg} !important;
-            border: 1px solid ${COLORS.panelBorder} !important;
-            border-radius: 0 !important;
-            box-shadow: none !important;
-            background-image: none !important;
-        }
-
-        /* Убираем скругления у всех иконок/аватаров на карточках (старый стиль) */
-        img[class*="avatar"],
-        img[class*="thumbnail"],
-        .avatar-card-image,
-        .game-card-thumb,
-        .game-card-thumb-container {
-            border-radius: 0 !important;
-            box-shadow: none !important;
-        }
-
-        /* =========================================================
-           PLAY BUTTON — плоская зелёная 2008, БЕЗ ТЕНЕЙ
-           ========================================================= */
-        .btn-common-play-game-lg,
-        .btn-common-play-game,
-        .btn-growth-lg,
-        .btn-growth-md,
-        .game-play-button-container .btn-primary-lg,
-        .game-play-button-container .btn-primary-md,
-        #game-details-play-button-container .btn-primary-lg,
-        #game-details-play-button-container button,
-        .play-button-container button,
-        button[data-testid="play-button"] {
-            background: ${COLORS.play} !important;
-            background-image: none !important;
-            border: 2px solid ${COLORS.playBorder} !important;
-            border-radius: 0 !important;
-            box-shadow: none !important;
-            color: #FFFFFF !important;
-            text-shadow: none !important;
-            font-weight: bold !important;
-            font-family: Arial, sans-serif !important;
-        }
-        .btn-common-play-game-lg:hover,
-        .btn-growth-lg:hover,
-        .game-play-button-container .btn-primary-lg:hover,
-        button[data-testid="play-button"]:hover {
-            background: ${COLORS.playHover} !important;
-            background-image: none !important;
-            box-shadow: none !important;
-        }
-
-        /* =========================================================
-           ВСЕ ОСТАЛЬНЫЕ КНОПКИ — ПЛОСКИЕ, БЕЗ ТЕНЕЙ
-           ========================================================= */
-        button,
-        .btn,
-        [class*="btn-primary"],
-        [class*="btn-secondary"],
-        [class*="btn-common"] {
-            border-radius: 0 !important;
-            box-shadow: none !important;
-            text-shadow: none !important;
-            background-image: none !important;
-        }
-
-        /* =========================================================
-           VOTE BAR
-           ========================================================= */
-        .vote-percentage-bar,
-        .ex-vote-percentage-bar,
-        [class*="vote-percentage-bar"],
-        [class*="VotePercentageBar"] {
-            background-color: ${COLORS.barBg} !important;
-            border-radius: 0 !important;
-            height: 8px !important;
-            box-shadow: none !important;
-        }
-        .vote-percentage-bar .vote-percentage,
-        .ex-vote-percentage-bar .ex-vote-percentage,
-        [class*="vote-percentage"]:not([class*="bar"]),
-        [class*="VotePercentageFill"] {
-            background-color: ${COLORS.like} !important;
-            border-radius: 0 !important;
-        }
-
-        /* =========================================================
-           LIKE — ЗЕЛЁНЫЙ
-           ========================================================= */
-        .icon-like,
-        .enable-like,
-        .icon-vote-up,
-        [class*="icon-like"]:not([class*="dislike"]),
-        [class*="vote-up"],
-        [class*="VoteUp"],
-        button[data-testid="upvote-button"],
-        .vote-up-button,
-        .upvote {
-            color: ${COLORS.like} !important;
-            fill: ${COLORS.like} !important;
-            box-shadow: none !important;
-        }
-        .icon-like svg, .vote-up-button svg,
-        [class*="icon-like"]:not([class*="dislike"]) svg,
-        button[data-testid="upvote-button"] svg {
-            fill: ${COLORS.like} !important;
-            stroke: ${COLORS.like} !important;
-        }
-
-        /* =========================================================
-           DISLIKE — КРАСНЫЙ
-           ========================================================= */
-        .icon-dislike,
-        .enable-dislike,
-        .icon-vote-down,
-        [class*="icon-dislike"],
-        [class*="vote-down"],
-        [class*="VoteDown"],
-        button[data-testid="downvote-button"],
-        .vote-down-button,
-        .downvote {
-            color: ${COLORS.dislike} !important;
-            fill: ${COLORS.dislike} !important;
-            box-shadow: none !important;
-        }
-        .icon-dislike svg, .vote-down-button svg,
-        [class*="icon-dislike"] svg,
-        button[data-testid="downvote-button"] svg {
-            fill: ${COLORS.dislike} !important;
-            stroke: ${COLORS.dislike} !important;
-        }
-
-        /* =========================================================
-           FAVORITE — ВСЕГДА ЖЁЛТЫЙ (и кнопка, и иконка)
-           ========================================================= */
-        .icon-favorite,
-        .icon-favorite-selected,
-        .icon-unfavorite,
-        #favorite-button,
-        #favorite-button.btn-primary,
-        [class*="favorite-button"],
-        [class*="favoriteButton"],
-        button[data-testid="favorite-button"],
-        .favorite-button,
-        .favorite {
-            color: ${COLORS.favorite} !important;
-            background-color: ${COLORS.favorite} !important;
-            background-image: none !important;
-            border: 2px solid ${COLORS.favoriteBord} !important;
-            border-radius: 0 !important;
-            box-shadow: none !important;
-            text-shadow: none !important;
-            font-weight: bold !important;
-        }
-        .icon-favorite svg,
-        .icon-favorite-selected svg,
-        .icon-unfavorite svg,
-        #favorite-button svg,
-        [class*="favorite-button"] svg,
-        button[data-testid="favorite-button"] svg {
-            fill: #FFFFFF !important;
-            stroke: #FFFFFF !important;
-        }
-        #favorite-button:hover,
-        button[data-testid="favorite-button"]:hover,
-        [class*="favorite-button"]:hover {
-            background-color: ${COLORS.favoriteHover} !important;
-            box-shadow: none !important;
-        }
-
-        /* Если кнопка favorite — просто иконка в голосовании (без фона) */
-        .icon-favorite:not([class*="button"]),
-        .icon-favorite-selected:not([class*="button"]),
-        .icon-unfavorite {
-            background-color: transparent !important;
-            border: none !important;
-        }
-        .icon-favorite:not([class*="button"]) svg,
-        .icon-favorite-selected:not([class*="button"]) svg,
-        .icon-unfavorite svg {
-            fill: ${COLORS.favorite} !important;
-            stroke: ${COLORS.favoriteBord} !important;
-        }
-
-        /* =========================================================
-           ИНПУТЫ, СЕЛЕКТЫ — старый квадратный стиль
-           ========================================================= */
-        input[type="text"],
-        input[type="search"],
-        input[type="email"],
-        input[type="password"],
-        textarea,
-        select {
-            border: 1px solid #7A7A7A !important;
-            border-radius: 0 !important;
-            box-shadow: none !important;
-            background: #FFFFFF !important;
-            background-image: none !important;
-        }
-
-        /* =========================================================
-           УБИРАЕМ ВСЕ ТЕНИ И СКРУГЛЕНИЯ НА САЙТЕ (грубо, но радикально)
-           ========================================================= */
-        * {
-            box-shadow: none !important;
-            text-shadow: none !important;
-        }
+        /* КНОПКА FAVORITE (Классический Оранжевый) */
+        #favorite-button,[class*="favorite-button"],button[data-testid="favorite-button"]{background-color:#FFA500!important;border-top:2px solid #FFB732!important;border-left:2px solid #FFB732!important;border-bottom:2px solid #B37400!important;border-right:2px solid #B37400!important;border-radius:0!important;color:#000!important}
+        
+        /* ЖЕСТКИЙ СБРОС ВСЕХ СОВРЕМЕННЫХ СКРУГЛЕНИЙ (РАДИКАЛЬНЫЙ RETRO-ФИКС) */
+        *, *::before, *::after { box-shadow:none!important; text-shadow:none!important; border-radius:0!important; }
     `;
 
-    function injectStyles() {
-        if (typeof GM_addStyle !== 'undefined') {
-            GM_addStyle(css);
+    // Быстрое и безопасное внедрение стилей в DOM до начала рендеринга элементов
+    if (typeof GM_addStyle !== 'undefined') {
+        GM_addStyle(css);
+    } else {
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        style.appendChild(document.createTextNode(css));
+        const root = document.head || document.documentElement;
+        if (root) {
+            root.appendChild(style);
         } else {
-            const style = document.createElement('style');
-            style.type = 'text/css';
-            style.textContent = css;
-            (document.head || document.documentElement).appendChild(style);
+            document.addEventListener("DOMContentLoaded", () => document.head.appendChild(style));
         }
-    }
-
-    injectStyles();
-
-    // Ранняя инъекция до появления <head>
-    if (!document.head) {
-        const earlyStyle = document.createElement('style');
-        earlyStyle.textContent = css;
-        document.documentElement.appendChild(earlyStyle);
     }
 })();

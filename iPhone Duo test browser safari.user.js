@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Roblox 2008 Classic Theme (Play / Like / Dislike / Favorite)
+// @name         Roblox 2008 Classic Theme (Full Page)
 // @namespace    http://tampermonkey.net/
-// @version      2.0
-// @description  Возвращает классический вид Roblox 2008: чистая зелёная кнопка Play, зелёный лайк, красный дизлайк, жёлтый Фаворит
+// @version      3.0
+// @description  Полностью классический вид Roblox 2008: плоские зелёные кнопки без теней, зелёный лайк, красный дизлайк, жёлтый Фаворит, старый серый фон
 // @author       You
 // @match        https://www.roblox.com/*
 // @match        https://web.roblox.com/*
@@ -14,22 +14,112 @@
 (function () {
     'use strict';
 
-    // ==== ЦВЕТА КЛАССИКИ 2008 ====
     const COLORS = {
-        playTop:    '#3CB043',  // основной зелёный
-        playBottom: '#2E8B2E',  // нижний оттенок (лёгкий бевел)
-        playBorder: '#1B5E1B',
-        like:       '#4CAF50',  // зелёный лайк
-        dislike:    '#D32F2F',  // красный дизлайк
-        favorite:   '#FFC107',  // жёлтый Фаворит
-        favoriteBorder: '#E0A800',
-        barBg:      '#C62828',  // фон полосы голосования (красный)
+        play:         '#3CB043',   // плоский зелёный
+        playHover:    '#4FCC57',
+        playBorder:   '#1B5E1B',
+        like:         '#4CAF50',
+        dislike:      '#D32F2F',
+        favorite:     '#FFC107',   // жёлтый всегда
+        favoriteHover:'#FFD54F',
+        favoriteBord: '#E0A800',
+        barBg:        '#C62828',
+        pageBg:       '#E8E8E8',   // старый серый фон
+        panelBg:      '#FFFFFF',
+        panelBorder:  '#B0B0B0',
+        headerBg:     '#1F1F1F',
+        headerText:   '#FFFFFF',
+        link:         '#0033CC',
+        linkHover:    '#0055FF',
+        text:         '#000000',
     };
 
     const css = `
-        /* ============================================
-           PLAY BUTTON — классическая зелёная 2008
-           ============================================ */
+        /* =========================================================
+           БАЗОВЫЙ ФОН И ТЕКСТ — классика 2008
+           ========================================================= */
+        html, body {
+            background-color: ${COLORS.pageBg} !important;
+            color: ${COLORS.text} !important;
+            font-family: Arial, Helvetica, sans-serif !important;
+        }
+
+        a, a:visited {
+            color: ${COLORS.link} !important;
+            text-decoration: underline !important;
+        }
+        a:hover {
+            color: ${COLORS.linkHover} !important;
+            text-decoration: underline !important;
+        }
+
+        h1, h2, h3 {
+            font-family: "Comic Sans MS", "Arial", sans-serif !important;
+            color: #222 !important;
+            font-weight: bold !important;
+            text-shadow: none !important;
+        }
+
+        /* =========================================================
+           ВЕРХНЯЯ ПАНЕЛЬ (NAVIGATION)
+           ========================================================= */
+        #navigation,
+        .navbar,
+        nav[class*="navbar"],
+        [class*="navigation-container"],
+        [class*="NavigationBar"],
+        header[class*="navbar"] {
+            background: ${COLORS.headerBg} !important;
+            background-image: none !important;
+            border-bottom: 2px solid #000 !important;
+            box-shadow: none !important;
+        }
+        #navigation a,
+        .navbar a,
+        nav[class*="navbar"] a {
+            color: ${COLORS.headerText} !important;
+            text-decoration: none !important;
+        }
+        #navigation a:hover,
+        .navbar a:hover {
+            text-decoration: underline !important;
+        }
+
+        /* =========================================================
+           ПАНЕЛИ / КАРТОЧКИ — плоский белый прямоугольник
+           ========================================================= */
+        .container,
+        .content,
+        .section,
+        .game-card,
+        [class*="card"],
+        [class*="Card"],
+        [class*="panel"],
+        [class*="Panel"],
+        .game-card-container,
+        .item-card-container,
+        .game-cards,
+        .section-content {
+            background: ${COLORS.panelBg} !important;
+            border: 1px solid ${COLORS.panelBorder} !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            background-image: none !important;
+        }
+
+        /* Убираем скругления у всех иконок/аватаров на карточках (старый стиль) */
+        img[class*="avatar"],
+        img[class*="thumbnail"],
+        .avatar-card-image,
+        .game-card-thumb,
+        .game-card-thumb-container {
+            border-radius: 0 !important;
+            box-shadow: none !important;
+        }
+
+        /* =========================================================
+           PLAY BUTTON — плоская зелёная 2008, БЕЗ ТЕНЕЙ
+           ========================================================= */
         .btn-common-play-game-lg,
         .btn-common-play-game,
         .btn-growth-lg,
@@ -40,44 +130,62 @@
         #game-details-play-button-container button,
         .play-button-container button,
         button[data-testid="play-button"] {
-            background: linear-gradient(to bottom, ${COLORS.playTop} 0%, ${COLORS.playBottom} 100%) !important;
+            background: ${COLORS.play} !important;
+            background-image: none !important;
             border: 2px solid ${COLORS.playBorder} !important;
-            border-radius: 4px !important;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.35),
-                        0 2px 3px rgba(0,0,0,0.35) !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
             color: #FFFFFF !important;
-            text-shadow: 1px 1px 0 ${COLORS.playBorder} !important;
+            text-shadow: none !important;
             font-weight: bold !important;
+            font-family: Arial, sans-serif !important;
         }
         .btn-common-play-game-lg:hover,
         .btn-growth-lg:hover,
         .game-play-button-container .btn-primary-lg:hover,
         button[data-testid="play-button"]:hover {
-            background: linear-gradient(to bottom, #4FCC57 0%, #359B35 100%) !important;
+            background: ${COLORS.playHover} !important;
+            background-image: none !important;
+            box-shadow: none !important;
         }
 
-        /* ============================================
-           VOTE BAR — полоса голосования
-           ============================================ */
+        /* =========================================================
+           ВСЕ ОСТАЛЬНЫЕ КНОПКИ — ПЛОСКИЕ, БЕЗ ТЕНЕЙ
+           ========================================================= */
+        button,
+        .btn,
+        [class*="btn-primary"],
+        [class*="btn-secondary"],
+        [class*="btn-common"] {
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+            background-image: none !important;
+        }
+
+        /* =========================================================
+           VOTE BAR
+           ========================================================= */
         .vote-percentage-bar,
         .ex-vote-percentage-bar,
         [class*="vote-percentage-bar"],
         [class*="VotePercentageBar"] {
             background-color: ${COLORS.barBg} !important;
-            border-radius: 2px !important;
+            border-radius: 0 !important;
             height: 8px !important;
+            box-shadow: none !important;
         }
         .vote-percentage-bar .vote-percentage,
         .ex-vote-percentage-bar .ex-vote-percentage,
         [class*="vote-percentage"]:not([class*="bar"]),
         [class*="VotePercentageFill"] {
             background-color: ${COLORS.like} !important;
-            border-radius: 2px !important;
+            border-radius: 0 !important;
         }
 
-        /* ============================================
-           LIKE (палец вверх) — зелёный
-           ============================================ */
+        /* =========================================================
+           LIKE — ЗЕЛЁНЫЙ
+           ========================================================= */
         .icon-like,
         .enable-like,
         .icon-vote-up,
@@ -89,6 +197,7 @@
         .upvote {
             color: ${COLORS.like} !important;
             fill: ${COLORS.like} !important;
+            box-shadow: none !important;
         }
         .icon-like svg, .vote-up-button svg,
         [class*="icon-like"]:not([class*="dislike"]) svg,
@@ -97,9 +206,9 @@
             stroke: ${COLORS.like} !important;
         }
 
-        /* ============================================
-           DISLIKE (палец вниз) — красный
-           ============================================ */
+        /* =========================================================
+           DISLIKE — КРАСНЫЙ
+           ========================================================= */
         .icon-dislike,
         .enable-dislike,
         .icon-vote-down,
@@ -111,6 +220,7 @@
         .downvote {
             color: ${COLORS.dislike} !important;
             fill: ${COLORS.dislike} !important;
+            box-shadow: none !important;
         }
         .icon-dislike svg, .vote-down-button svg,
         [class*="icon-dislike"] svg,
@@ -119,11 +229,12 @@
             stroke: ${COLORS.dislike} !important;
         }
 
-        /* ============================================
-           FAVORITE / ИЗБРАННОЕ — жёлтый
-           ============================================ */
+        /* =========================================================
+           FAVORITE — ВСЕГДА ЖЁЛТЫЙ (и кнопка, и иконка)
+           ========================================================= */
         .icon-favorite,
         .icon-favorite-selected,
+        .icon-unfavorite,
         #favorite-button,
         #favorite-button.btn-primary,
         [class*="favorite-button"],
@@ -132,43 +243,69 @@
         .favorite-button,
         .favorite {
             color: ${COLORS.favorite} !important;
-        }
-        .icon-favorite svg,
-        .icon-favorite-selected svg,
-        #favorite-button svg,
-        [class*="favorite-button"] svg,
-        button[data-testid="favorite-button"] svg {
-            fill: ${COLORS.favorite} !important;
-            stroke: ${COLORS.favoriteBorder} !important;
-        }
-        #favorite-button,
-        button[data-testid="favorite-button"] {
             background-color: ${COLORS.favorite} !important;
-            border: 2px solid ${COLORS.favoriteBorder} !important;
-            border-radius: 4px !important;
-            color: #3A2A00 !important;
+            background-image: none !important;
+            border: 2px solid ${COLORS.favoriteBord} !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
             text-shadow: none !important;
             font-weight: bold !important;
         }
+        .icon-favorite svg,
+        .icon-favorite-selected svg,
+        .icon-unfavorite svg,
+        #favorite-button svg,
+        [class*="favorite-button"] svg,
+        button[data-testid="favorite-button"] svg {
+            fill: #FFFFFF !important;
+            stroke: #FFFFFF !important;
+        }
         #favorite-button:hover,
-        button[data-testid="favorite-button"]:hover {
-            background-color: #FFD54F !important;
+        button[data-testid="favorite-button"]:hover,
+        [class*="favorite-button"]:hover {
+            background-color: ${COLORS.favoriteHover} !important;
+            box-shadow: none !important;
         }
 
-        /* ============================================
-           UNFAVORITE — если кнопка уже выбрана
-           ============================================ */
-        .icon-unfavorite,
-        [class*="unfavorite"] {
-            color: #9E9E9E !important;
+        /* Если кнопка favorite — просто иконка в голосовании (без фона) */
+        .icon-favorite:not([class*="button"]),
+        .icon-favorite-selected:not([class*="button"]),
+        .icon-unfavorite {
+            background-color: transparent !important;
+            border: none !important;
         }
-        .icon-unfavorite svg,
-        [class*="unfavorite"] svg {
-            fill: #9E9E9E !important;
+        .icon-favorite:not([class*="button"]) svg,
+        .icon-favorite-selected:not([class*="button"]) svg,
+        .icon-unfavorite svg {
+            fill: ${COLORS.favorite} !important;
+            stroke: ${COLORS.favoriteBord} !important;
+        }
+
+        /* =========================================================
+           ИНПУТЫ, СЕЛЕКТЫ — старый квадратный стиль
+           ========================================================= */
+        input[type="text"],
+        input[type="search"],
+        input[type="email"],
+        input[type="password"],
+        textarea,
+        select {
+            border: 1px solid #7A7A7A !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            background: #FFFFFF !important;
+            background-image: none !important;
+        }
+
+        /* =========================================================
+           УБИРАЕМ ВСЕ ТЕНИ И СКРУГЛЕНИЯ НА САЙТЕ (грубо, но радикально)
+           ========================================================= */
+        * {
+            box-shadow: none !important;
+            text-shadow: none !important;
         }
     `;
 
-    // ==== Внедрение CSS (совместимо с iOS-расширениями) ====
     function injectStyles() {
         if (typeof GM_addStyle !== 'undefined') {
             GM_addStyle(css);
@@ -182,19 +319,7 @@
 
     injectStyles();
 
-    // ==== Реакция на динамическую подгрузку SPA Roblox ====
-    // Roblox подгружает кнопки асинхронно, поэтому без этого
-    // часть стилей может не примениться до перезагрузки.
-    const observer = new MutationObserver(() => {
-        // Ничего делать не нужно — CSS уже применён ко всему документу.
-        // Observer нужен, только если хочешь вручную инжектить классы.
-    });
-    observer.observe(document.documentElement, {
-        childList: true,
-        subtree: true
-    });
-
-    // ==== Ранняя инъекция до <head> (для iOS Safari) ====
+    // Ранняя инъекция до появления <head>
     if (!document.head) {
         const earlyStyle = document.createElement('style');
         earlyStyle.textContent = css;
